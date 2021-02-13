@@ -28,61 +28,90 @@ const URL = "http://localhost:8080/";
 const URL2 = "http://localhost:8080/test/";
 
 const Button = () => {
-  const formData = useRecoilValue(formSchemaObject);
-
+  // const formData = useRecoilValue(formSchemaObject);
+  const [formData, setFormData] = useRecoilState(formSchemaObject);
+  // const [initialFormData, setInitialFormData] = useState(formSchemaObject)
+  const initialFormData = formData;
+  // console.log("intial data", initialFormData);
+  // const [intialFormData, setInitialFormData] = useState(formData);
   const [loading, setLoading] = useState(false);
 
   return (
-    <button
-      type="button"
-      className="bg-black white"
-      style={{
-        height: "60px",
-      }}
-      onClick={(e) => {
-        e.preventDefault();
-        setLoading(true);
+    <>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          // justifyContent: "center",
+        }}
+      >
+        <button
+          type="button"
+          className="bg-black white"
+          style={{
+            height: "60px",
+            marginRight: "7px",
+          }}
+          onClick={() => {
+            console.log("inside button before changing", formData);
+            setFormData(() => formSchemaObject);
+            console.log("inside button after changing", formData);
+          }}
+        >
+          Reset All
+        </button>
+        <button
+          type="button"
+          className="bg-black white"
+          style={{
+            height: "60px",
+            marginLeft: "5px",
+          }}
+          onClick={(e) => {
+            e.preventDefault();
+            setLoading(true);
 
-        console.log(formData.type, "1");
-        fetch(URL, {
-          method: "POST",
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(formData)
-        })
-          .then((response) => {
-            response.text().then(ress => {
-              console.log(ress);
-              fetch(`${URL}${ress}`)
-                .then(css =>{
-                  css.text().then(style => {
-                    FileDownload(style, "stylesheet.css");
-                    setLoading(false);
+            console.log(formData.type, "1");
+            fetch(URL, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(formData),
+            })
+              .then((response) => {
+                response.text().then((ress) => {
+                  console.log(ress);
+                  fetch(`${URL}${ress}`).then((css) => {
+                    css.text().then((style) => {
+                      FileDownload(style, "stylesheet.css");
+                      setLoading(false);
+                    });
                   });
+                });
               })
-            });
-          })
-          // .then((res) => {
-          //   fetch(`${URL}${res}`)
-          //     .then((res) => {
-          //       return res.text();
-          //     })
-          //     .then((content) => {
-          //       FileDownload(content, "stylesheet.css");
-          //     });
-          //   setLoading(false);
-          // })
-          .catch((e) => {
-            console.log(e);
-            setLoading(false);
-          });
-      }}
-    >
-      {loading ? (
-        <img src={loadingGif} height="30" width="auto" />
-      ) : (
-        <span>Get CSS!</span>
-      )}
-    </button>
+              // .then((res) => {
+              //   fetch(`${URL}${res}`)
+              //     .then((res) => {
+              //       return res.text();
+              //     })
+              //     .then((content) => {
+              //       FileDownload(content, "stylesheet.css");
+              //     });
+              //   setLoading(false);
+              // })
+              .catch((e) => {
+                console.log(e);
+                setLoading(false);
+              });
+          }}
+        >
+          {loading ? (
+            <img src={loadingGif} height="30" width="auto" />
+          ) : (
+            <span>Get CSS!</span>
+          )}
+        </button>
+      </div>
+    </>
   );
 };
 
